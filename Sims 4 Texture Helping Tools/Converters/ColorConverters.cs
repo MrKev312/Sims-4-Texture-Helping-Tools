@@ -4,8 +4,11 @@ public static class ColorConverters
 {
 	public static (Image<Rgba32>, Image<Rgba32>) ConvertRGBAToYCoCgA(Image<Rgba32> input)
 	{
-		// Create a new image for the output
-		Image<Rgba32> output1 = new(input.Width, input.Height);
+        if (input is null)
+            throw new ArgumentNullException(nameof(input));
+
+        // Create a new image for the output
+        Image<Rgba32> output1 = new(input.Width, input.Height);
 		Image<Rgba32> output2 = new(input.Width, input.Height);
 
 		// Loop through the pixels of the images
@@ -26,8 +29,17 @@ public static class ColorConverters
 
 	public static Image<Rgba32> ConvertYCoCgToRGBA(Image<L8> y, Image<L8> co, Image<L8> cg, Image<L8> alpha)
 	{
-		// Check that the images have the same dimensions
-		if (alpha.Width != y.Width || alpha.Height != y.Height ||
+        if (y is null)
+            throw new ArgumentNullException(nameof(y));
+        if (co is null)
+            throw new ArgumentNullException(nameof(co));
+        if (cg is null)
+            throw new ArgumentNullException(nameof(cg));
+        if (alpha is null)
+            throw new ArgumentNullException(nameof(alpha));
+
+        // Check that the images have the same dimensions
+        if (alpha.Width != y.Width || alpha.Height != y.Height ||
 			alpha.Width != co.Width || alpha.Height != co.Height ||
 			alpha.Width != cg.Width || alpha.Height != cg.Height)
 		{

@@ -3,17 +3,20 @@ using Gibbed.RefPack;
 
 namespace Sims_4_Texture_Helping_Tools.Data.DBPF;
 
-public class DBPFCompressor
+public static class DBPFCompressor
 {
 	public static byte[] Decompress(byte[] data, DBPFCompressionType type)
 	{
-		return type switch
+        if (data is null)
+            throw new ArgumentNullException(nameof(data));
+
+        return type switch
 		{
 			DBPFCompressionType.Uncompressed => data,
 			DBPFCompressionType.Zlib => DecompressZlib(data),
 			DBPFCompressionType.InternalCompression => Decompression.Decompress(data),
 			DBPFCompressionType.DeletedRecord => CheckDeletedRecord(data),
-			_ => throw new Exception($"Unrecognized compression type {type}")
+			_ => throw new ArgumentException($"Unrecognized compression type {type}")
 		};
 	}
 

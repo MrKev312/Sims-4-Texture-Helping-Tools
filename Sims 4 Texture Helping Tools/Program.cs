@@ -141,7 +141,7 @@ internal class Program
 		encoder.OutputOptions.Format = format;
 		encoder.OutputOptions.FileFormat = OutputFileFormat.Dds;
 
-		if (pngFilepath.Contains("!combined!"))
+		if (pngFilepath.Contains("!combined!", StringComparison.Ordinal))
 		{
 			using Image<Rgba32> image = Image.Load<Rgba32>(pngFilepath);
 
@@ -149,8 +149,8 @@ internal class Program
 
 			image2.Mutate(x => x.Resize(image2.Width / 2, image2.Height / 2));
 
-			using FileStream fs1 = File.OpenWrite(ddsFilepath.Replace("!combined!", "!00064DCA!"));
-			using FileStream fs2 = File.OpenWrite(ddsFilepath.Replace("!combined!", "!00064DC9!"));
+			using FileStream fs1 = File.OpenWrite(ddsFilepath.Replace("!combined!", "!00064DCA!", StringComparison.Ordinal));
+			using FileStream fs2 = File.OpenWrite(ddsFilepath.Replace("!combined!", "!00064DC9!", StringComparison.Ordinal));
 
 			encoder.EncodeToStream(image1, fs1);
 			encoder.EncodeToStream(image2, fs2);

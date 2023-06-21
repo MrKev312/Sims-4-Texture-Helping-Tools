@@ -117,11 +117,11 @@ public class DBPFPackage
 
 						png = ImageConverters.ConvertDDSToPNG(dds, dds2);                        
 
-						savePath = savePath.Replace("!00064DCA!", "!combined!");
+						savePath = savePath.Replace("!00064DCA!", "!combined!", StringComparison.Ordinal);
 					}
 					else
 					{
-						png = ImageConverters.ConvertDDStoPNG(dds);
+						png = ImageConverters.ConvertDDSToPNG(dds);
 					}
 
 					png.Save(Path.ChangeExtension(savePath, "png"));

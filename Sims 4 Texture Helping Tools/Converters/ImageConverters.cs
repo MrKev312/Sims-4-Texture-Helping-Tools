@@ -8,9 +8,9 @@ using BCnEncoder.ImageSharp;
 using BCnEncoder.Shared.ImageFiles;
 
 namespace Sims_4_Texture_Helping_Tools.Converters;
-public class ImageConverters
+public static class ImageConverters
 {
-	public static Image ConvertDDStoPNG(DdsFile file)
+	public static Image ConvertDDSToPNG(DdsFile file)
 	{
 		BcDecoder decoder = new();
 		return decoder.DecodeToImageRgba32(file);

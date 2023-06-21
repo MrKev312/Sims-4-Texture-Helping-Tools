@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.IO;
 using ISerializable = Sims_4_Texture_Helping_Tools.Data.IO.Serialization.ISerializable;
 
 namespace Sims_4_Texture_Helping_Tools.Data.DBPF;
@@ -41,12 +42,12 @@ public class DBPFHeader : ISerializable
 
 	public void Read(Stream stream)
 	{
-		BinaryReader binaryReader = new(stream);
+		using BinaryReader binaryReader = new(stream);
 
 		// Check the magic value "DBPF"
 		if (Encoding.ASCII.GetString(binaryReader.ReadBytes(4)) != Magic)
 		{
-			throw new Exception();
+			throw new IOException("Magic does not match");
 		}
 
 		// Versioning
@@ -86,7 +87,7 @@ public class DBPFHeader : ISerializable
 
 	public void Write(Stream stream)
 	{
-		BinaryWriter binaryWriter = new(stream);
+		using BinaryWriter binaryWriter = new(stream);
 
 		// The magic "DBPF"
 		binaryWriter.Write(Encoding.ASCII.GetBytes(Magic));

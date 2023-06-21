@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Sims_4_Texture_Helping_Tools.Data.DBPF;
 public class DBPFResourcePointer
 {
-	public ResourceKey ResourceKey {get; set;}
+	public ResourceKey? ResourceKey {get; set;}
 
 	public DBPFCompressionType CompressionType { get; set; }
 
