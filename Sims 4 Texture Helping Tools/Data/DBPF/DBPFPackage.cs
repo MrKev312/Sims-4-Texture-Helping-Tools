@@ -74,8 +74,8 @@ public class DBPFPackage
 
 	public void Decompress(string outputPath)
 	{
-		Parallel.ForEach(Resources, keyValue =>
-		{
+        Parallel.ForEach(Resources, keyValue =>
+        {
 			DBPFResourcePointer resource = keyValue.Value;
 			if (keyValue.Key.Group == 0x00064DC9u)
 				return;
@@ -115,7 +115,7 @@ public class DBPFPackage
 						using MemoryStream stream2 = new(buffer);
 						DdsFile dds2 = DdsFile.Load(stream2);
 
-						png = ImageConverters.ConvertDDSToPNG(dds, dds2);                        
+						png = ImageConverters.ConvertDDSToPNG(dds, dds2);
 
 						savePath = savePath.Replace("!00064DCA!", "!combined!", StringComparison.Ordinal);
 					}
@@ -124,7 +124,8 @@ public class DBPFPackage
 						png = ImageConverters.ConvertDDSToPNG(dds);
 					}
 
-					png.Save(Path.ChangeExtension(savePath, "png"));
+					png.Save(Path.ChangeExtension(savePath, CompressionFormatHelper.GetCompressionFormat(dds) + ".png"));
+                    png.Dispose();
 				}
 				//else
 				//{

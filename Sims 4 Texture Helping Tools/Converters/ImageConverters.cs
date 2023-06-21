@@ -16,7 +16,6 @@ public static class ImageConverters
 		return decoder.DecodeToImageRgba32(file);
 	}
 
-	// A function that takes in a filepath pointing to a dds and converts this to a png file with a given output filepath
 	public static Image ConvertDDSToPNG(DdsFile dds1, DdsFile dds2)
 	{
 		BcDecoder decoder = new();
