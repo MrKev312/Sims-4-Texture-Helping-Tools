@@ -42,7 +42,7 @@ public class DBPFHeader : ISerializable
 
 	public void Read(Stream stream)
 	{
-		using BinaryReader binaryReader = new(stream);
+		BinaryReader binaryReader = new(stream);
 
 		// Check the magic value "DBPF"
 		if (Encoding.ASCII.GetString(binaryReader.ReadBytes(4)) != Magic)
@@ -87,7 +87,7 @@ public class DBPFHeader : ISerializable
 
 	public void Write(Stream stream)
 	{
-		using BinaryWriter binaryWriter = new(stream);
+		BinaryWriter binaryWriter = new(stream);
 
 		// The magic "DBPF"
 		binaryWriter.Write(Encoding.ASCII.GetBytes(Magic));

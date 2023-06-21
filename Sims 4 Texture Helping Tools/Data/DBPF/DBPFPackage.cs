@@ -27,7 +27,7 @@ public class DBPFPackage
 		FilePath = filePath;
 		Resources = new();
 
-		Stream stream = File.OpenRead(filePath);
+		using Stream stream = File.OpenRead(filePath);
 		Header = new DBPFHeader(stream);
 
 		stream.Seek(Header.IndexOffset, SeekOrigin.Begin);
