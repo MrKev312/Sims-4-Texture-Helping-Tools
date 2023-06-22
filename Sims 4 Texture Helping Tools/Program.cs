@@ -61,12 +61,15 @@ internal static class Program
 		Console.WriteLine("Please enter the source file path");
 		string filepath = Console.ReadLine()!;
 
-		if (File.Exists(filepath) && Path.GetExtension(filepath).ToUpperInvariant() == ".PACKAGE")
+		if (File.Exists(filepath))
 		{
-			Console.WriteLine("File does not end in .package, are you sure this is a package file? (y/n): ");
+			if (Path.GetExtension(filepath).ToUpperInvariant() != ".PACKAGE")
+			{
+				Console.WriteLine("File does not end in .package, are you sure this is a package file? (y/n): ");
 
-			if(char.ToUpperInvariant(Console.ReadLine()[0]) != 'Y')
-				return;
+				if (char.ToUpperInvariant(Console.ReadLine()[0]) != 'Y')
+					return;
+			}
 		}
 		else
 		{
