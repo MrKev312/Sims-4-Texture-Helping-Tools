@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Pipes;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BCnEncoder.Decoder;
-using BCnEncoder.ImageSharp;
-using BCnEncoder.Shared.ImageFiles;
+﻿using BCnEncoder.Shared.ImageFiles;
 using Sims_4_Texture_Helping_Tools.Converters;
 
 namespace Sims_4_Texture_Helping_Tools.Data.DBPF;
@@ -98,9 +89,11 @@ public class DBPFPackage
 
 					if (!shouldConvert)
 					{
-						savePath = Path.ChangeExtension(savePath, "png");
+						savePath = Path.ChangeExtension(savePath, "dds");
 						using FileStream output = File.Create(savePath);
 						output.Write(DBPFCompressor.Decompress(buffer, resource.CompressionType));
+
+						return;
 					}
 
 					Image png;

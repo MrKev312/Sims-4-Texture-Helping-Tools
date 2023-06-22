@@ -1,7 +1,4 @@
 ﻿using System.Diagnostics;
-using BCnEncoder.Decoder;
-using BCnEncoder.Encoder;
-using BCnEncoder.ImageSharp;
 using BCnEncoder.Shared;
 using BCnEncoder.Shared.ImageFiles;
 using Sims_4_Texture_Helping_Tools.Converters;

@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.IO;
 using ISerializable = Sims_4_Texture_Helping_Tools.Data.IO.Serialization.ISerializable;
 
 namespace Sims_4_Texture_Helping_Tools.Data.DBPF;

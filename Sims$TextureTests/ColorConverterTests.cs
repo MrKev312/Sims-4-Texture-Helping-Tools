@@ -1,6 +1,4 @@
-using System.Drawing;
 using Sims_4_Texture_Helping_Tools.Converters;
-using SixLabors.ImageSharp.PixelFormats;
 
 namespace Sims_TextureTests;
 

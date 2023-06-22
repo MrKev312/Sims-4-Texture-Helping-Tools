@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BCnEncoder.Decoder;
+﻿using BCnEncoder.Decoder;
 using BCnEncoder.Encoder;
 using BCnEncoder.ImageSharp;
 using BCnEncoder.Shared;
@@ -50,14 +45,19 @@ public static class ImageConverters
 		return ColorConverters.ConvertYCoCgToRGBA(channels[1], channels[2], channels[3], channels[0]);
 	}
 
-	public static DdsFile ConvertPNGToDDS(Image<Rgba32> image, CompressionFormat compressionFormat = CompressionFormat.Rgba, bool generateMipMaps = false)
+	public static DdsFile ConvertPNGToDDS(Image image, CompressionFormat compressionFormat = CompressionFormat.Rgba, bool generateMipMaps = false)
 	{
+		if (image is null)
+			throw new ArgumentNullException(nameof(image));
+
 		BcEncoder encoder = new();
 		encoder.OutputOptions.GenerateMipMaps = generateMipMaps;
 		encoder.OutputOptions.Quality = CompressionQuality.BestQuality;
 		encoder.OutputOptions.Format = compressionFormat;
 		encoder.OutputOptions.FileFormat = OutputFileFormat.Dds;
 
-		return encoder.EncodeToDds(image);
+		using Image<Rgba32> imageRGBA = image.CloneAs<Rgba32>();
+
+		return encoder.EncodeToDds(imageRGBA);
 	}
 }
