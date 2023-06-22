@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BCnEncoder.Decoder;
+using BCnEncoder.Encoder;
 using BCnEncoder.ImageSharp;
+using BCnEncoder.Shared;
 using BCnEncoder.Shared.ImageFiles;
 
 namespace Sims_4_Texture_Helping_Tools.Converters;
@@ -46,5 +48,16 @@ public static class ImageConverters
 		}
 
 		return ColorConverters.ConvertYCoCgToRGBA(channels[1], channels[2], channels[3], channels[0]);
+	}
+
+	public static DdsFile ConvertPNGToDDS(Image<Rgba32> image, CompressionFormat compressionFormat = CompressionFormat.Rgba, bool generateMipMaps = false)
+	{
+		BcEncoder encoder = new();
+		encoder.OutputOptions.GenerateMipMaps = generateMipMaps;
+		encoder.OutputOptions.Quality = CompressionQuality.BestQuality;
+		encoder.OutputOptions.Format = compressionFormat;
+		encoder.OutputOptions.FileFormat = OutputFileFormat.Dds;
+
+		return encoder.EncodeToDds(image);
 	}
 }

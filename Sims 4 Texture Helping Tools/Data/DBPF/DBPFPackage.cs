@@ -72,12 +72,12 @@ public class DBPFPackage
 		}
 	}
 
-	public void Decompress(string outputPath)
+	public void Decompress(string outputPath, bool shouldConvert = true)
 	{
         Parallel.ForEach(Resources, keyValue =>
         {
 			DBPFResourcePointer resource = keyValue.Value;
-			if (keyValue.Key.Group == 0x00064DC9u)
+			if (keyValue.Key.Group == 0x00064DC9u && shouldConvert)
 				return;
 
 			string savePath = Path.Combine(outputPath, $"{keyValue.Key.Type:X8}!{keyValue.Key.Group:X8}!{keyValue.Key.InstanceID:X16}.bin");
@@ -95,6 +95,13 @@ public class DBPFPackage
 					buffer = DBPFCompressor.Decompress(buffer, resource.CompressionType);
 					using MemoryStream stream = new(buffer);
 					DdsFile dds = DdsFile.Load(stream);
+
+					if (!shouldConvert)
+					{
+						savePath = Path.ChangeExtension(savePath, "png");
+						using FileStream output = File.Create(savePath);
+						output.Write(DBPFCompressor.Decompress(buffer, resource.CompressionType));
+					}
 
 					Image png;
 					if (keyValue.Key.Group == 0x00064DCAu)
@@ -124,15 +131,14 @@ public class DBPFPackage
 						png = ImageConverters.ConvertDDSToPNG(dds);
 					}
 
-					png.Save(Path.ChangeExtension(savePath, CompressionFormatHelper.GetCompressionFormat(dds) + ".png"));
+					png.Save(Path.ChangeExtension(savePath, $"{CompressionFormatHelper.GetCompressionFormat(dds)}.png"));
                     png.Dispose();
 				}
-				//else
-				//{
-				//    using FileStream output = File.Create(savePath);
-				//    output.Write(DBPFCompressor.Decompress(buffer, resource.CompressionType));
-
-				//}
+				else
+				{
+					using FileStream output = File.Create(savePath);
+					output.Write(DBPFCompressor.Decompress(buffer, resource.CompressionType));
+				}
 			}
 			catch (Exception ex)
 			{

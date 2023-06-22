@@ -9,157 +9,234 @@ using Sims_4_Texture_Helping_Tools.Data.DBPF;
 
 namespace Sims_4_Texture_Helping_Tools;
 
-internal class Program
+internal static class Program
 {
 	static void Main()
 	{
-		Console.WriteLine("Enter a filepath:");
+		MainMenu();
+	}
+
+	static void MainMenu()
+	{
+		while (true)
+		{
+			Console.WriteLine("Welcome to the Sims 4 Texture Helping Tools. Please choose one of the following tasks:");
+			Console.WriteLine("1. Extract a package to a destination folder.");
+			Console.WriteLine("2. Package a source folder into a package.");
+			Console.WriteLine("3. Convert files from one format to another.");
+			Console.WriteLine("4. Exit program");
+
+			if (!int.TryParse(Console.ReadLine(), out int choice) || choice < 0 || choice > 4)
+			{
+				Console.WriteLine("Invalid choice. Please enter a number between 1 and 4.");
+				continue;
+			}
+
+			Console.WriteLine();
+
+			switch (choice)
+			{
+				case 1:
+					ExtractFiles();
+					break;
+				case 2:
+					//PackageFiles();
+					Console.WriteLine("Currently not implemented");
+					break;
+				case 3:
+					ConvertFiles();
+					break;
+				case 4:
+					return;
+			}
+
+			Console.WriteLine();
+		}
+	}
+
+	static void ExtractFiles()
+	{
+		// TODO menu that allows only extracting one filetype
+		Console.WriteLine();
+		Console.WriteLine("Please enter the source file path");
 		string filepath = Console.ReadLine()!;
+
+		if (File.Exists(filepath) && Path.GetExtension(filepath).ToUpperInvariant() == ".PACKAGE")
+		{
+			Console.WriteLine("File does not end in .package, are you sure this is a package file? (y/n): ");
+
+			if(char.ToUpperInvariant(Console.ReadLine()[0]) != 'Y')
+				return;
+		}
+		else
+		{
+			Console.WriteLine("The source folder does not exist.");
+			return;
+		}
+
 		DBPFPackage package = new(filepath);
-		Console.WriteLine("Enter a filepath:");
+
+		Console.WriteLine("Please enter the destination folder path:");
 		filepath = Console.ReadLine()!;
+
+		Console.WriteLine("Should extracted files be converted (y/n): ");
+		bool shouldConvert = char.ToUpperInvariant(Console.ReadLine()[0]) == 'Y';
 
 		Stopwatch stopwatch = new();
 		stopwatch.Start();
 
-		package.Decompress(filepath);
+		package.Decompress(filepath, shouldConvert);
 
 		stopwatch.Stop();
 		// Print a message when all done
 		Console.WriteLine($"All files extracted and converted in {stopwatch.Elapsed}.");
 	}
 
-	//public static void ConvertImages()
-	//{
-
-	//    // Ask for a filepath
-	//    Console.WriteLine("Enter a filepath:");
-	//    string filepath = Console.ReadLine()!;
-
-	//    // Check if the filepath is valid
-	//    if (!Directory.Exists(filepath))
-	//    {
-	//        Console.WriteLine("Invalid filepath.");
-	//        return;
-	//    }
-
-	//    // Ask if the files need to be converted to 1: png or 2: dds
-	//    Console.WriteLine("Enter 1 for png or 2 for dds:");
-	//    string choice = Console.ReadLine()!;
-
-	//    // Check if the choice is valid
-	//    if (choice is not "1" and not "2")
-	//    {
-	//        Console.WriteLine("Invalid choice.");
-	//        return;
-	//    }
-
-	//    // Get the output format and folder name
-	//    string outputFormat = choice == "1" ? ".png" : ".dds";
-	//    string outputFolder = choice == "1" ? "png" : "dds";
-
-	//    // Create the output folder if it doesn't exist
-	//    string outputDir = Path.Combine(filepath, outputFolder);
-	//    Directory.CreateDirectory(outputDir);
-
-	//    // Get all the image files in the filepath
-	//    string[] imageFiles = Directory.GetFiles(filepath, "*.*", SearchOption.TopDirectoryOnly).Where(s => s.Split('!')[1] != "00064DC9").AsParallel().ToArray();
-
-	//    Stopwatch stopwatch = new();
-	//    stopwatch.Start();
-
-	//    // Convert the images in parallel using tasks
-	//    Task[] tasks = new Task[imageFiles.Length];
-	//    for (int i = 0; i < imageFiles.Length; i++)
-	//    {
-	//        // Capture the current file name in a local variable
-	//        string file = imageFiles[i];
-
-	//        // Create a task to convert the file
-	//        tasks[i] = Task.Run(() =>
-	//        {
-	//            try
-	//            {
-	//                // Get the file extension
-	//                string extension = Path.GetExtension(file);
-
-	//                // Check if the file is already in the output format
-	//                if (extension == outputFormat)
-	//                {
-	//                    Console.WriteLine($"Skipping {file} as it is already in {outputFormat} format.");
-	//                    return;
-	//                }
-
-	//                // Get the file name without extension
-	//                string fileName = Path.GetFileNameWithoutExtension(file);
-
-	//                string compressionType = Path.GetExtension(fileName).Replace(".", "");
-
-	//                CompressionFormat format = CompressionFormat.Bgra;
-	//                Enum.TryParse(compressionType, true, out format);
-
-	//                fileName = Path.GetFileNameWithoutExtension(fileName);
-
-	//                if (fileName.Split('!')[1] == "00064DCA")
-	//                    fileName = fileName.Replace("00064DCA", "<YCoCg>");
-
-	//                // Get the output file path
-	//                string outputFile = Path.Combine(outputDir, fileName + outputFormat);
-
-	//                // Convert the file depending on the output format
-	//                if (outputFormat == ".png")
-	//                {
-	//                    ConvertDdsToPng(file, outputFile);
-	//                }
-	//                else
-	//                {
-	//                    ConvertPngToDds(file, outputFile, format);
-	//                }
-	//            }
-	//            catch (Exception e)
-	//            {
-	//                Console.WriteLine($"Error on {file}:\n{e}");
-	//            }
-	//        });
-	//    }
-
-	//    // Wait for all tasks to finish
-	//    Task.WaitAll(tasks);
-
-	//    stopwatch.Stop();
-
-	//    // Print a message when all done
-	//    Console.WriteLine($"All files converted in {stopwatch.Elapsed}.");
-	//}
-
-	// A function that takes in a filepath pointing to a png and converts this to a dds file with a given output filepath
-	public static void ConvertPngToDds(string pngFilepath, string ddsFilepath, CompressionFormat format)
+	static void ConvertFiles()
 	{
-		BcEncoder encoder = new();
-		encoder.OutputOptions.GenerateMipMaps = false;
-		encoder.OutputOptions.Quality = CompressionQuality.BestQuality;
-		encoder.OutputOptions.Format = format;
-		encoder.OutputOptions.FileFormat = OutputFileFormat.Dds;
-
-		if (pngFilepath.Contains("!combined!", StringComparison.Ordinal))
+		while (true)
 		{
-			using Image<Rgba32> image = Image.Load<Rgba32>(pngFilepath);
+			Console.WriteLine("Please select a format from the list of supported formats:");
+			Console.WriteLine("1. PNG (file.{compression level}.png for setting compression)");
+			Console.WriteLine("2. DDS (file.dds)");
+			Console.WriteLine("3. Exit");
 
-			(Image<Rgba32> image1, Image<Rgba32> image2) = ColorConverters.ConvertRGBAToYCoCgA(image);
+			if (!int.TryParse(Console.ReadLine(), out int format) || format < 0 || format > 3)
+			{
+				Console.WriteLine("Invalid choice. Please enter a number between 1 and 4.");
+				continue;
+			}
 
-			image2.Mutate(x => x.Resize(image2.Width / 2, image2.Height / 2));
+			Console.WriteLine();
 
-			using FileStream fs1 = File.OpenWrite(ddsFilepath.Replace("!combined!", "!00064DCA!", StringComparison.Ordinal));
-			using FileStream fs2 = File.OpenWrite(ddsFilepath.Replace("!combined!", "!00064DC9!", StringComparison.Ordinal));
+			Console.WriteLine("Please enter the source folder/file path:");
+			string sourcePath = Console.ReadLine();
 
-			encoder.EncodeToStream(image1, fs1);
-			encoder.EncodeToStream(image2, fs2);
+			string[] files;
+
+			if (File.Exists(sourcePath))
+			{
+				files = new string[]{ sourcePath };
+			}
+			else if (Directory.Exists(sourcePath))
+			{
+				files = Directory.GetFiles(sourcePath, "*.*", SearchOption.TopDirectoryOnly);
+			}
+			else
+			{
+				Console.WriteLine("The source folder does not exist.");
+				continue;
+			}
+
+			Console.WriteLine("Please enter the destination folder path:");
+			string destPath = Console.ReadLine();
+
+			if (!Directory.Exists(destPath))
+			{
+				Console.WriteLine("The destination folder does not exist.");
+				continue;
+			}
+
+			Stopwatch sw = Stopwatch.StartNew();
+
+			switch (format)
+			{
+				case 1:
+					ConvertPNGFile(files, destPath);
+					break;
+				case 2:
+					ConvertDDSFile(files, destPath);
+					break;
+				case 3:
+					return;
+			}
+
+			sw.Stop();
+
+			Console.WriteLine();
+			Console.WriteLine($"Finished converting in {sw.Elapsed}.");
+			Console.WriteLine();
 		}
-		else
+	}
+
+	public static void ConvertPNGFile(string[] files, string destPath)
+	{
+		Parallel.ForEach(files, file =>
 		{
-			using Image<Rgba32> image = Image.Load<Rgba32>(pngFilepath);
-			using FileStream fs = File.OpenWrite(ddsFilepath);
-			encoder.EncodeToStream(image, fs);
-		}
+			try
+			{
+				// Get the file extension
+				string extension = Path.GetExtension(file).ToUpperInvariant();
+
+				// Check if the file is already in the output format
+				if (extension != ".PNG")
+				{
+					Console.WriteLine($"Skipping {file} as it is not a png.");
+					return;
+				}
+
+				// Get the file name without extension
+				string fileName = Path.GetFileNameWithoutExtension(file);
+
+				CompressionFormat format = CompressionFormat.Bgra;
+
+				if (!string.IsNullOrEmpty(Path.GetExtension(fileName)))
+				{
+					string compressionType = Path.GetExtension(fileName)[1..];
+
+					Enum.TryParse(compressionType, true, out format);
+				}
+
+				fileName = Path.GetFileNameWithoutExtension(fileName);
+
+				// Get the output file path
+				string outputFile = Path.Combine(destPath, Path.ChangeExtension(fileName, "dds"));
+
+				Image tmp = Image.Load(file);
+				using Image<Rgba32> image = tmp.CloneAs<Rgba32>();
+				tmp.Dispose();
+
+				using FileStream fs = File.OpenWrite(outputFile);
+				DdsFile dds = ImageConverters.ConvertPNGToDDS(image, format);
+				dds.Write(fs);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"Error on {file}:\n{e}");
+			}
+		});
+	}
+
+	public static void ConvertDDSFile(string[] files, string destPath)
+	{
+		Parallel.ForEach(files, file =>
+		{
+			try
+			{
+				// Get the file extension
+				string extension = Path.GetExtension(file)[1..].ToUpperInvariant();
+
+				// Check if the file is already in the output format
+				if (extension != "DDS")
+				{
+					Console.WriteLine($"Skipping {file} as it is not a dds.");
+					return;
+				}
+
+				// Get the output file path
+				string outputFile = Path.Combine(destPath, Path.ChangeExtension(file, "png"));
+
+				using FileStream fs = File.OpenRead(file);
+				DdsFile ddsFile = DdsFile.Load(fs);
+
+				Image image = ImageConverters.ConvertDDSToPNG(ddsFile);
+				image.Save(outputFile);
+				image.Dispose();
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine($"Error on {file}:\n{e}");
+			}
+		});
 	}
 }
